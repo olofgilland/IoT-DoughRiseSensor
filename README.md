@@ -2,9 +2,9 @@
 
 **Author**: Olof Gilland / og222ig
 
-In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system uses LEDs to visually indicate dough rising and has been tested for future expansion with AWS email alerts. The idea was inspired by the baking process where monitoring dough manually is common. This solution brings a touch of automation to the kitchen.
+In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system uses LEDs to visually indicate dough rising and has been tested for future expansion with AWS email alerts. I came up with this idea because I often bake pizza and realized that it was tedious to monitor the dough constantly while waiting for it to rise to twice it's size.
 
-The project is estimated to take **4–8 hours**, depending on experience.
+The project is estimated to take **3–7 hours**, depending on experience.
 
 ---
 
@@ -21,16 +21,16 @@ I wanted to automate the process of tracking dough rise while baking pizza. By p
 
 ## Materials
 
-| Component                        | Description / Link (if available)                                      | Price (SEK) |
+| Component                        | Description                                                            | Price (SEK) |
 |----------------------------------|------------------------------------------------------------------------|-------------|
 | Raspberry Pi Pico WH             | Wi-Fi microcontroller                                                  | 349         |
-| IR Break Beam Sensor (5mm)       | Sensor pair to detect beam break (880nm IR)                            | 99         |
+| IR Break Beam Sensor (5mm)       | Sensor pair to detect beam break (880nm IR)                            | 99          |
 | Breadboard + Jumper Wires        | Prototyping and connection cables                                      | Included    |
 | 330Ω Resistors                   | For current-limiting on LEDs                                           | Included    |
 | Red LED                          | Lights when dough has risen                                            | Included    |
 | Green LED                        | Lights when dough has not yet risen                                    | Included    |
 | USB-A to micro USB cable         | Power and data connection                                              | Included    |
-| Rain gauge (plastic)             | To contain dough and allow IR beam through side                        | 30         |
+| Rain gauge (plastic)             | To contain dough and allow IR beam through side                        | 30          |
 
 All parts were sourced from Electrokit.se except for rain gauge which was bought at Jula.
 
@@ -114,7 +114,7 @@ while True:
     time.sleep(0.5)
 ```
 
-Uploaded via Pymakr to the Raspberry Pi Pico WH.
+Uploaded via Thonny to the Raspberry Pi Pico WH.
 
 ---
 
@@ -131,10 +131,6 @@ Currently no data is transmitted.
 - Wi-Fi for network
 - AWS SDK (Boto3 in Lambda) for sending email
 - No MQTT or webhook in this version
-
----
-
-## Presenting the Data
 
 ---
 
@@ -155,7 +151,7 @@ The system consists of:
 
 ---
 
-![project_photo](https://via.placeholder.com/800x400?text=Insert+your+final+hardware+photo+here)
+![project_photo](placeholder)
 
 ---
 
