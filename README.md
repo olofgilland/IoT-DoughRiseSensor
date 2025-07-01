@@ -74,6 +74,8 @@ A simplified description of the wiring:
 **Resistor Calc**: LEDs use ~20mA; 330Ω limits current to ~10mA which is safe for GPIO.
 
 A full circuit diagram was sketched by hand (image to be included in report or appendix).
+<img width="678" alt="bild" src="https://github.com/user-attachments/assets/791a9ff0-938f-4b28-97d8-34b65febc01d" />
+
 
 ---
 
