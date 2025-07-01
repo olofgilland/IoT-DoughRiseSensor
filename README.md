@@ -8,7 +8,7 @@ The project is estimated to take **4–8 hours**, depending on experience.
 
 ---
 
-## 🎯 Objective
+## Objective
 
 I wanted to automate the process of tracking dough rise while baking pizza. By placing dough in a clear plastic rain gauge, I could use a non-contact IR beam sensor to detect when the dough had doubled in size and blocked the beam. This lets me:
 
@@ -19,39 +19,38 @@ I wanted to automate the process of tracking dough rise while baking pizza. By p
 
 ---
 
-## 🧰 Materials
+## Materials
 
 | Component                        | Description / Link (if available)                                      | Price (SEK) |
 |----------------------------------|------------------------------------------------------------------------|-------------|
-| Raspberry Pi Pico WH             | Wi-Fi microcontroller                                                  | 109         |
-| IR Break Beam Sensor (5mm)       | Sensor pair to detect beam break (880nm IR)                           | ~50         |
-| Breadboard + Jumper Wires        | Prototyping and connection cables                                     | ~60         |
-| 330Ω Resistors                   | For current-limiting on LEDs                                          | Included    |
-| Red LED                          | Lights when dough has risen                                           | Included    |
-| Green LED                        | Lights when dough has not yet risen                                   | Included    |
-| USB-A to micro USB cable         | Power and data connection                                             | Included    |
-| Rain gauge (plastic)             | To contain dough and allow IR beam through side                       | ~30         |
+| Raspberry Pi Pico WH             | Wi-Fi microcontroller                                                  | 349         |
+| IR Break Beam Sensor (5mm)       | Sensor pair to detect beam break (880nm IR)                            | 99         |
+| Breadboard + Jumper Wires        | Prototyping and connection cables                                      | Included    |
+| 330Ω Resistors                   | For current-limiting on LEDs                                           | Included    |
+| Red LED                          | Lights when dough has risen                                            | Included    |
+| Green LED                        | Lights when dough has not yet risen                                    | Included    |
+| USB-A to micro USB cable         | Power and data connection                                              | Included    |
+| Rain gauge (plastic)             | To contain dough and allow IR beam through side                        | 30         |
 
-All parts were sourced from Electrokit.se.
+All parts were sourced from Electrokit.se except for rain gauge which was bought at Jula.
 
 ---
 
-## 💻 Computer Setup
+## Computer Setup
 
-- **IDE**: Visual Studio Code  
-- **Extensions**: Pymakr for uploading code to the Pico  
-- **Firmware**: [MicroPython for Pico W](https://micropython.org/download/RPI_PICO_W/)  
+- **IDE**: Thonny  
+- **Firmware**:  MicroPython for Pico W
 - **Tools Installed**:
-  - [Node.js](https://nodejs.org/en)
-  - Pymakr extension in VS Code
+  - Thonny (from thonny.org)
 - **Workflow**:
-  1. Flash MicroPython firmware to Pico WH via drag-and-drop mode.
-  2. Write code in `main.py` and upload via Pymakr.
-  3. Debug over USB serial.
+ 	1.	Flash MicroPython firmware to the Pico WH via drag-and-drop while holding the BOOTSEL button.
+	2.	Open Thonny and select “MicroPython (Raspberry Pi Pico)” as the interpreter.
+	3.	Write and run code directly in Thonny, save as main.py on the Pico.
+	4.	Use the Shell in Thonny to view print statements and debug.
 
 ---
 
-## 🔌 Putting Everything Together
+## Putting Everything Together
 
 A simplified description of the wiring:
 
@@ -78,7 +77,7 @@ A full circuit diagram was sketched by hand (image to be included in report or a
 
 ---
 
-## ☁️ Platform
+## Platform
 
 Currently running fully **offline** on a Raspberry Pi Pico WH with no cloud or server. The only planned extension is to use **AWS SES** + **Lambda** to send an email when dough has risen.  
 
@@ -93,7 +92,7 @@ For scaling:
 
 ---
 
-## 🧠 The Code
+## The Code
 
 ```python
 from machine import Pin
@@ -119,7 +118,7 @@ Uploaded via Pymakr to the Raspberry Pi Pico WH.
 
 ---
 
-## 📡 Transmitting Data (Future)
+## Transmitting Data (Future)
 
 Currently no data is transmitted.
 
@@ -135,18 +134,11 @@ Currently no data is transmitted.
 
 ---
 
-## 📊 Presenting the Data
-
-No visual dashboard in this version.
-
-**Planned ideas**:
-- Use OLED screen to show status
-- Log timestamps to cloud and graph in Grafana
-- Store events in DynamoDB or InfluxDB
+## Presenting the Data
 
 ---
 
-## ✅ Final Design
+## Final Design
 
 The system consists of:
 
