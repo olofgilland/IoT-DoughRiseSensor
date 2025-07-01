@@ -2,84 +2,98 @@
 
 **Author**: Olof Gilland / og222ig
 
-In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The project visually indicates the dough's rise using LEDs and can also be extended to send email alerts via AWS when the dough is ready. The green LED shows when the beam is unbroken, and a red LED lights up when the dough interrupts the beam—indicating it has risen.
+In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system uses LEDs to visually indicate dough rising and has been tested for future expansion with AWS email alerts. The idea was inspired by the baking process where monitoring dough manually is common. This solution brings a touch of automation to the kitchen.
 
-This project is a great introduction to hardware prototyping with sensors and microcontrollers, and can be completed in a few hours depending on experience.
-
----
-
-## Objective
-
-I wanted to create a simple, automated way to detect when dough has risen during baking (in my case pizza). Traditional methods require manual observation, so this project uses an IR break beam sensor to track when the dough expands and breaks the beam. The idea is to notify the user either visually (using LEDs) or remotely (via email) when the rise is complete. This is done by placing dough in a rain gauge which easily lets us see when the dough has been doubled.
+The project is estimated to take **4–8 hours**, depending on experience.
 
 ---
 
-## Material
+## 🎯 Objective
 
-| Component                        | Purpose                                  |
-|----------------------------------|------------------------------------------|
-| Raspberry Pi Pico WH             | Microcontroller with Wi-Fi capability    |
-| IR Break Beam Sensor (5mm)       | Detect dough rise (beam interruption)    |
-| Breadboard + Jumper Wires        | Connect components                       |
-| 330Ω Resistors                   | Current limiting for LEDs                |
-| Red LED                          | Indicates dough has risen (beam blocked) |
-| Green LED                        | Indicates beam is unbroken               |
-| USB-A to micro USB cable         | Power and programming                    |
-| Rain gauge                       | Accurate measurement of dough rise       |
+I wanted to automate the process of tracking dough rise while baking pizza. By placing dough in a clear plastic rain gauge, I could use a non-contact IR beam sensor to detect when the dough had doubled in size and blocked the beam. This lets me:
+
+- Avoid constant visual checking.
+- Collect time-based insights for improving rise predictions.
+- (Future) Track impact of temperature/humidity using additional sensors.
+- (Future) Send notifications to email or smartphone.
 
 ---
 
-## Raspberry Pi Pico WH
+## 🧰 Materials
 
-The **Raspberry Pi Pico WH** is a Wi-Fi-enabled microcontroller used to control the IR sensor and LEDs, and potentially to send email notifications via AWS.
+| Component                        | Description / Link (if available)                                      | Price (SEK) |
+|----------------------------------|------------------------------------------------------------------------|-------------|
+| Raspberry Pi Pico WH             | Wi-Fi microcontroller                                                  | 109         |
+| IR Break Beam Sensor (5mm)       | Sensor pair to detect beam break (880nm IR)                           | ~50         |
+| Breadboard + Jumper Wires        | Prototyping and connection cables                                     | ~60         |
+| 330Ω Resistors                   | For current-limiting on LEDs                                          | Included    |
+| Red LED                          | Lights when dough has risen                                           | Included    |
+| Green LED                        | Lights when dough has not yet risen                                   | Included    |
+| USB-A to micro USB cable         | Power and data connection                                             | Included    |
+| Rain gauge (plastic)             | To contain dough and allow IR beam through side                       | ~30         |
 
----
-
-## IR Break Beam Sensor
-
-This sensor includes:
-- **IR Transmitter (LED)**
-- **IR Receiver (Phototransistor)**
-
-When the dough blocks the IR beam, the sensor signals the Pico, which turns on the red LED.
-
----
-
-## LED Indicators
-
-- **Green LED**: Beam is unbroken, dough hasn't risen past the beam
-- **Red LED**: Beam is blocked, dough has risen
-
-Each LED uses a 330Ω resistor to limit current.
+All parts were sourced from Electrokit.se.
 
 ---
 
-## Wiring Setup
+## 💻 Computer Setup
 
-Here’s how the system is wired:
-
-- IR LED (transmitter):  
-  - VCC → Red rail (3.3V)  
-  - GND → Blue rail (GND)  
-
-- IR Receiver (phototransistor):  
-  - VCC → 3.3V  
-  - OUT → GP19 (can vary)  
-  - 10kΩ Resistor: OUT → GND (pull-down)
-
-- **Green LED**:  
-  - Anode → GP14 via 220Ω resistor  
-  - Cathode → GND  
-
-- **Red LED**:  
-  - Anode → GP15 via 220Ω resistor  
-  - Cathode → GND  
-
-Use a breadboard for connections and jumper wires to make links between the Pico and the components.
+- **IDE**: Visual Studio Code  
+- **Extensions**: Pymakr for uploading code to the Pico  
+- **Firmware**: [MicroPython for Pico W](https://micropython.org/download/RPI_PICO_W/)  
+- **Tools Installed**:
+  - [Node.js](https://nodejs.org/en)
+  - Pymakr extension in VS Code
+- **Workflow**:
+  1. Flash MicroPython firmware to Pico WH via drag-and-drop mode.
+  2. Write code in `main.py` and upload via Pymakr.
+  3. Debug over USB serial.
 
 ---
 
-## Code (Python / MicroPython)
+## 🔌 Putting Everything Together
+
+A simplified description of the wiring:
+
+- IR Transmitter:  
+  - VCC to 3.3V rail  
+  - GND to GND rail
+
+- IR Receiver:  
+  - OUT to GP19  
+  - 10kΩ resistor between OUT and GND (pull-down)
+
+- Green LED:  
+  - Anode to GP14 via 330Ω resistor  
+  - Cathode to GND rail
+
+- Red LED:  
+  - Anode to GP15 via 330Ω resistor  
+  - Cathode to GND rail
+
+**Voltage**: 3.3V  
+**Resistor Calc**: LEDs use ~20mA; 330Ω limits current to ~10mA which is safe for GPIO.
+
+A full circuit diagram was sketched by hand (image to be included in report or appendix).
+
+---
+
+## ☁️ Platform
+
+Currently running fully **offline** on a Raspberry Pi Pico WH with no cloud or server. The only planned extension is to use **AWS SES** + **Lambda** to send an email when dough has risen.  
+
+Platform choice:
+- **Local** to reduce complexity.
+- **Pico WH** chosen for built-in Wi-Fi, affordable price, and strong MicroPython support.
+
+For scaling:
+- Add cloud services (AWS, Azure IoT)
+- Add temperature/humidity sensors
+- Use InfluxDB + Grafana for tracking rise data over time
+
+---
+
+## 🧠 The Code
 
 ```python
 from machine import Pin
@@ -101,20 +115,55 @@ while True:
     time.sleep(0.5)
 ```
 
----
-
-## Extensions
-
-This project can be expanded to:
-- **Send an email notification** using AWS SES and Lambda when the beam is blocked.
-- **Monitor temperature/humidity** using a DHT11 or DHT22 sensor.
-- **Show dough status** on an OLED screen.
+Uploaded via Pymakr to the Raspberry Pi Pico WH.
 
 ---
 
-## Final Result
+## 📡 Transmitting Data (Future)
 
-The setup successfully detects the rise of the dough using the IR sensor and indicates the result using two LEDs. With Wi-Fi built into the Pico WH, it's ready for future upgrades like sending cloud-based alerts or connecting to an IoT dashboard.
+Currently no data is transmitted.
+
+**Planned**:
+- Wi-Fi connection with AWS SES + Lambda
+- Email sent only when dough has risen (red LED on)
+- Throttled: only 1 email every 1–2 minutes using DynamoDB timestamp check
+
+**Protocols**:
+- Wi-Fi for network
+- AWS SDK (Boto3 in Lambda) for sending email
+- No MQTT or webhook in this version
+
+---
+
+## 📊 Presenting the Data
+
+No visual dashboard in this version.
+
+**Planned ideas**:
+- Use OLED screen to show status
+- Log timestamps to cloud and graph in Grafana
+- Store events in DynamoDB or InfluxDB
+
+---
+
+## ✅ Final Design
+
+The system consists of:
+
+- Rain gauge to hold dough  
+- IR sensor on the side  
+- Breadboard with Pico WH and LEDs  
+- USB for power and debugging  
+- Fully working indicator LEDs
+
+**Lessons learned**:
+- IR beam sensors work through plastic!
+- Need controlled lighting to avoid interference
+- Could be made portable with battery and case
+
+---
+
+![project_photo](https://via.placeholder.com/800x400?text=Insert+your+final+hardware+photo+here)
 
 ---
 
