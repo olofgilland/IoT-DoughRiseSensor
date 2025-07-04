@@ -2,7 +2,7 @@
 
 **Author**: Olof Gilland / og222gi
 
-In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system uses LEDs to visually indicate dough rising and has been tested for future expansion with AWS email alerts. I came up with this idea because I often bake pizza and realized that it was tedious to monitor the dough constantly while waiting for it to rise to twice it's size.
+In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system visually indicates the dough’s rise using LEDs and sends an email notification via AWS when the dough has risen. I came up with this idea because I often bake pizza and found it tedious to constantly monitor when the dough had doubled in size.
 
 The project is estimated to take **3–7 hours**, depending on experience.
 
@@ -10,12 +10,12 @@ The project is estimated to take **3–7 hours**, depending on experience.
 
 ## Objective
 
-I wanted to automate the process of tracking dough rise while baking pizza. By placing dough in a clear plastic rain gauge, I could use a non-contact IR beam sensor to detect when the dough had doubled in size and blocked the beam. This lets me:
+I wanted to automate the process of tracking dough rise during pizza baking. By placing dough in a clear plastic rain gauge and using a non-contact IR sensor, I can now detect when the dough has expanded and broken the beam. The system:
 
-- Avoid constant visual checking.
-- Collect time-based insights for improving rise predictions.
+- Lights a red LED when the dough has risen, green when not
+- Sends an email alert via AWS SES + Lambda
+- Enables hands-off baking while improving rise timing accuracy
 - (Future) Track impact of temperature/humidity using additional sensors.
-- (Future) Send notifications to email or smartphone.
 
 ---
 
@@ -81,16 +81,15 @@ A full circuit diagram was sketched by hand (image to be included in report or a
 
 ## Platform
 
-Currently running fully **offline** on a Raspberry Pi Pico WH with no cloud or server. The only planned extension is to use **AWS SES** + **Lambda** to send an email when dough has risen.  
+The system includes cloud connectivity. When the dough rises and blocks the beam:
 
-Platform choice:
-- **Local** to reduce complexity.
-- **Pico WH** chosen for built-in Wi-Fi, affordable price, and strong MicroPython support.
+- An HTTP request is sent from the Pico WH to an AWS API Gateway endpoint.
+- A Lambda function is triggered, checking a cooldown and then sending an email via AWS SES.
+- A DynamoDB table stores the last sent timestamp to prevent spamming.
 
-For scaling:
-- Add cloud services (AWS, Azure IoT)
-- Add temperature/humidity sensors
-- Use InfluxDB + Grafana for tracking rise data over time
+Device: Raspberry Pi Pico WH (with built-in Wi-Fi)
+Cloud Services: AWS Lambda, SES, DynamoDB, API Gateway
+Data Transmission: HTTP POST from device to API
 
 ---
 
@@ -98,42 +97,90 @@ For scaling:
 
 ```python
 from machine import Pin
+import network
+import urequests
 import time
 
-sensor = Pin(19, Pin.IN, Pin.PULL_UP)
-led_green = Pin(14, Pin.OUT)
-led_red = Pin(15, Pin.OUT)
+# Wi-Fi credentials
+SSID = "WIFI_NAME"
+PASSWORD = "PASSWORD"
+
+# AWS API Gateway endpoint
+EMAIL_API_URL = "YOUR_EMAIL_API_URL"
+
+# Sensor and LED setup
+ir_sensor = Pin(14, Pin.IN, Pin.PULL_UP)
+led_clear = Pin(15, Pin.OUT)     # Green LED
+led_blocked = Pin(16, Pin.OUT)   # Red LED
+
+# Track previous state to avoid sending duplicate requests
+last_beam_blocked = False
+
+# Connect to Wi-Fi
+def connect_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(SSID, PASSWORD)
+
+    print("Connecting to Wi-Fi...")
+    while not wlan.isconnected():
+        time.sleep(1)
+
+    print("Connected:", wlan.ifconfig())
+
+def send_email():
+    try:
+        print("Sending request to AWS...")
+        response = urequests.post(EMAIL_API_URL)
+        print("Response:", response.status_code, response.text)
+        response.close()
+    except Exception as e:
+        print("Error sending request:", e)
+
+# Main program
+connect_wifi()
+print("Starting dough sensor...")
 
 while True:
-    if sensor.value() == 1:
+    sensor_value = ir_sensor.value()
+
+    if sensor_value == 1:
+        # Beam is unbroken – dough not risen
+        led_clear.on()
+        led_blocked.off()
+        last_beam_blocked = False
         print("Beam FREE – Dough not risen")
-        led_green.on()
-        led_red.off()
     else:
+        # Beam blocked – dough has risen
+        led_clear.off()
+        led_blocked.on()
         print("Beam BLOCKED – Dough has risen!")
-        led_green.off()
-        led_red.on()
-    time.sleep(0.5)
+
+        if not last_beam_blocked:
+            send_email()
+            last_beam_blocked = True
+
+    time.sleep(1)
+
+
 ```
 
 Uploaded via Thonny to the Raspberry Pi Pico WH.
 
 ---
 
-## Transmitting Data (Future)
+## Transmitting Data
 
-Currently no data is transmitted.
-
-**Planned**:
-- Wi-Fi connection with AWS SES + Lambda
-- Email sent only when dough has risen (red LED on)
-- Throttled: only 1 email every 1–2 minutes using DynamoDB timestamp check
-
-**Protocols**:
-- Wi-Fi for network
-- AWS SDK (Boto3 in Lambda) for sending email
-- No MQTT or webhook in this version
-
+- Protocol: Wi-Fi
+- Data sent via: HTTP POST to AWS API Gateway
+- Triggered Function: AWS Lambda (Python)
+- Email provider: AWS SES
+- Throttling: Email is only sent if >60 seconds have passed since last one (stored in DynamoDB)
+  
+Design consideration:
+- Reliable and low-power IR sensing
+- Minimal data transmission (only one request per dough rise event)
+- Avoid email spamming with cooldown logic
 ---
 
 ## Final Design
@@ -157,4 +204,4 @@ The system consists of:
 
 ---
 
-*Created on 2025-07-01*
+*Created on 2025-07-04*
