@@ -1,6 +1,6 @@
 # Dough Rise Detector – IR Sensor with Raspberry Pi Pico WH
 
-**Author**: Olof Gilland / og222ig
+**Author**: Olof Gilland / og222gi
 
 In this project, I created an IoT dough-rise detection system using a Raspberry Pi Pico WH and an IR break beam sensor. The system uses LEDs to visually indicate dough rising and has been tested for future expansion with AWS email alerts. I came up with this idea because I often bake pizza and realized that it was tedious to monitor the dough constantly while waiting for it to rise to twice it's size.
 
